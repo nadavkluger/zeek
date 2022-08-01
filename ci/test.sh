@@ -46,7 +46,7 @@ function run_unit_tests {
 
 function prep_artifacts {
     banner "Prepare artifacts"
-    [[ -d .tmp ]] && rm -rf .tmp/script-coverage && tar -czf tmp.tar.gz .tmp
+    [[ -d .tmp ]] && rm -rf .tmp/script-coverage && tar -czf tmp.tar.gz .tmp && rm -r .tmp
     junit2html btest-results.xml btest-results.html
 }
 
@@ -115,10 +115,35 @@ function run_external_btests {
     fi
 }
 
+function run_zam_tests {
+    if [ "${CIRRUS_TASK_NAME}" != "asan_sanitizer" -o "${CIRRUS_BRANCH}" != "topic/timw/zam-ci" ]; then
+        echo "ZAM tests skipped for non-master branches"
+        exit 0
+    fi
+
+    banner "Running ZAM tests: zeek"
+
+    pushd testing/btest
+
+    # Commenting out this line in btest.cfg causes the script profiling/coverage
+    # to be disabled. We do this for the sanitizer build right now because of a
+    # fairly significant performance bug when running tests.
+    if [ "${ZEEK_CI_DISABLE_SCRIPT_PROFILING}" = "1" ]; then
+        sed -i 's/^ZEEK_PROFILER_FILE/#ZEEK_PROFILER_FILE/g' btest.cfg
+    fi
+
+    ZEEK_ZAM=1 ${BTEST} -z ${ZEEK_CI_BTEST_RETRIES} -d -b -x btest-results.xml -j ${ZEEK_CI_BTEST_JOBS} language || result=1
+    make coverage
+    prep_artifacts
+    popd
+    return 0
+}
+
 banner "Start tests: ${ZEEK_CI_CPUS} cpus, ${ZEEK_CI_BTEST_JOBS} btest jobs"
 
 run_unit_tests
 run_btests
 run_external_btests
+run_zam_tests
 
 exit ${result}
