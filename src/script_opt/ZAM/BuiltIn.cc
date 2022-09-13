@@ -49,6 +49,7 @@ bool ZAMCompiler::IsZAM_BuiltIn(const Expr* e)
 		{"Files::__enable_reassembly", &ZAMCompiler::BuiltIn_Files__enable_reassembly},
 		{"Files::__set_reassembly_buffer", &ZAMCompiler::BuiltIn_Files__set_reassembly_buffer},
 		{"Log::__write", &ZAMCompiler::BuiltIn_Log__write},
+		{"cat", &ZAMCompiler::BuiltIn_cat},
 		{"current_time", &ZAMCompiler::BuiltIn_current_time},
 		{"get_port_transport_proto", &ZAMCompiler::BuiltIn_get_port_etc},
 		{"network_time", &ZAMCompiler::BuiltIn_network_time},
@@ -76,7 +77,7 @@ bool ZAMCompiler::BuiltIn_Analyzer__name(const NameExpr* n, const ExprPList& arg
 
 	if ( args[0]->Tag() == EXPR_CONST )
 		// Doesn't seem worth developing a variant for this weird
-		// usage cast.
+		// usage case.
 		return false;
 
 	int nslot = Frame1Slot(n, OP1_WRITE);
@@ -197,6 +198,122 @@ bool ZAMCompiler::BuiltIn_Log__write(const NameExpr* n, const ExprPList& args)
 	AddInst(z);
 
 	return true;
+	}
+
+bool ZAMCompiler::BuiltIn_cat(const NameExpr* n, const ExprPList& args)
+	{
+	if ( ! n )
+		{
+		reporter->Warning("return value from built-in function ignored");
+		return true;
+		}
+
+	int nslot = Frame1Slot(n, OP1_WRITE);
+	auto& a0 = args[0];
+	ZInstI z;
+
+	if ( args.empty() )
+		{
+		// Weird, but easy enough to support.
+		z = ZInstI(OP_CAT1_VC, nslot);
+		z.t = n->GetType();
+		z.c = ZVal(val_mgr->EmptyString());
+		}
+
+	else if ( args.size() > 1 )
+		{
+		z = GenInst(OP_CATN_V, n);
+		z.aux = BuildCatAux(args);
+		}
+
+	else if ( a0->GetType()->Tag() != TYPE_STRING )
+		{
+		if ( a0->Tag() == EXPR_NAME )
+			{
+			z = GenInst(OP_CAT1FULL_VV, n, a0->AsNameExpr());
+			z.t = a0->GetType();
+			}
+		else
+			{
+			z = ZInstI(OP_CAT1_VC, nslot);
+			z.t = n->GetType();
+			z.c = ZVal(ZAM_val_cat(a0->AsConstExpr()->ValuePtr()));
+			}
+		}
+
+	else if ( a0->Tag() == EXPR_CONST )
+		{
+		z = GenInst(OP_CAT1_VC, n, a0->AsConstExpr());
+		z.t = n->GetType();
+		}
+
+	else
+		z = GenInst(OP_CAT1_VV, n, a0->AsNameExpr());
+
+	AddInst(z);
+
+	return true;
+	}
+
+ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
+	{
+	auto n = args.size();
+	auto aux = new ZInstAux(n);
+	aux->cat_args = new std::unique_ptr<CatArg>;
+
+	for ( size_t i = 0; i < n; ++i )
+		{
+		auto& a_i = args[i];
+		auto& t = a_i->GetType();
+
+		std::unique_ptr<CatArg> ca;
+
+		if ( a_i->Tag() == EXPR_CONST )
+			{
+			auto c = a_i->AsConstExpr()->ValuePtr();
+			aux->Add(i, c);	// it will be ignore
+			auto sv = ZAM_val_cat(c);
+			auto s = sv->AsString();
+			auto b = reinterpret_cast<char*>(s->Bytes());
+			ca = std::make_unique<CatArg>(std::string(b, s->Len()));
+			}
+
+		else
+			{
+			auto slot = FrameSlot(a_i->AsNameExpr());
+			aux->Add(i, slot, t);
+
+			switch ( t->Tag() ) {
+			TYPE_BOOL:
+			TYPE_INT:
+			TYPE_COUNT:
+			TYPE_DOUBLE:
+			TYPE_TIME:
+			TYPE_ENUM:
+			TYPE_PORT:
+			TYPE_ADDR:
+			TYPE_SUBNET:
+				ca = std::make_unique<FixedCatArg>(t, slot);
+				break;
+
+			TYPE_STRING:
+				ca = std::make_unique<StringCatArg>(slot);
+				break;
+
+			TYPE_PATTERN:
+				ca = std::make_unique<PatternCatArg>(slot);
+				break;
+
+			default:
+				ca = std::make_unique<DescCatArg>(t, slot);
+				break;
+			}
+			}
+
+		aux->cat_args[i] = std::move(ca);
+		}
+
+	return aux;
 	}
 
 bool ZAMCompiler::BuiltIn_current_time(const NameExpr* n, const ExprPList& args)

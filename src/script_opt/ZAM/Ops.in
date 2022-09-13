@@ -2149,6 +2149,46 @@ internal-op StrStr
 type VVC
 eval	EvalStrStr(frame[z.v2], z.c)
 
+macro Cat1Op(val)
+	auto& v1 = frame[z.v1];
+	ZVal::DeleteManagedType(v1);
+	v1 = val;
+	zeek::Ref(v1.string_val);
+
+internal-op Cat1
+type VC
+eval	Cat1Op(z.c)
+
+internal-op Cat1
+type VV
+eval	Cat1Op(frame[z.v2])
+
+macro Cat1FullVal(val)
+	Cat1Op(ZVal(ZAM_val_cat(val.ToVal(z.t))))
+
+internal-op Cat1Full
+type VC
+eval	Cat1FullVal(z.c)
+
+internal-op Cat1Full
+type VV
+eval	Cat1FullVal(frame[z.v2])
+
+internal-op CatN
+type V
+eval	auto aux = z.aux;
+	auto& ca = aux->cat_args;
+	int n = aux->n;
+	size_t max_size = 0;
+	for ( int i = 0; i < n; ++i )
+		max_size += ca[i]->MaxSize(frame);
+	auto res = new char[max_size + /* slop */ n];
+	auto res_p = res;
+	for ( int i = 0; i < n; ++i )
+		ca[i]->RenderInto(frame, res_p);
+	auto s = new String(false, reinterpret_cast<byte_vec>(res), res_p - res);
+	Cat1Op(ZVal(new StringVal(s)))
+
 internal-op Analyzer--Name
 type VV
 eval	auto atype = frame[z.v2].ToVal(z.t);
