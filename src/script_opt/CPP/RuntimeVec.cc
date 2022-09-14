@@ -2,6 +2,7 @@
 
 #include "zeek/script_opt/CPP/RuntimeVec.h"
 
+#include "zeek/Overflow.h"
 #include "zeek/ZeekString.h"
 
 namespace zeek::detail
@@ -394,6 +395,11 @@ VectorValPtr vector_coerce_to__CPP(const VectorValPtr& v, const TypePtr& targ)
 		if ( ! v_i )
 			continue;
 
+		// We compute these for each element to cover the case where
+		// the coerced vector is of type "any".
+		auto& t_i = v_i->GetType();
+		auto it = t_i->InternalType();
+
 		ValPtr r_i;
 		switch ( ytag )
 			{
@@ -402,11 +408,17 @@ VectorValPtr vector_coerce_to__CPP(const VectorValPtr& v, const TypePtr& targ)
 				break;
 
 			case TYPE_INT:
-				r_i = val_mgr->Int(v_i->CoerceToInt());
+				if ( (it == TYPE_INTERNAL_UNSIGNED || it == TYPE_INTERNAL_DOUBLE) && would_overflow(t_i.get(), yt.get(), v_i.get()) )
+					reporter->CPPRuntimeError("overflow promoting from unsigned/double to signed arithmetic value");
+				else
+					r_i = val_mgr->Int(v_i->CoerceToInt());
 				break;
 
 			case TYPE_COUNT:
-				r_i = val_mgr->Count(v_i->CoerceToUnsigned());
+				if ( (it == TYPE_INTERNAL_INT || it == TYPE_INTERNAL_DOUBLE) && would_overflow(t_i.get(), yt.get(), v_i.get()) )
+					reporter->CPPRuntimeError("overflow promoting from signed/double to signed arithmetic value");
+				else
+					r_i = val_mgr->Count(v_i->CoerceToUnsigned());
 				break;
 
 			case TYPE_ENUM:
