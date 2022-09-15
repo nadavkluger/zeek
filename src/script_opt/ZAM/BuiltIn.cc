@@ -259,7 +259,7 @@ ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
 	{
 	auto n = args.size();
 	auto aux = new ZInstAux(n);
-	aux->cat_args = new std::unique_ptr<CatArg>;
+	aux->cat_args = new std::unique_ptr<CatArg>[n];
 
 	for ( size_t i = 0; i < n; ++i )
 		{
