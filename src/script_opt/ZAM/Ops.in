@@ -1766,6 +1766,7 @@ internal-op Next-Vector-Iter-Val-Var
 # v2 = value variable
 # v3 = iteration info
 # v4 = branch target if loop done
+op1-read-write
 type VVVV
 eval	auto& si = step_iters[z.v3];
 	if ( si.IsDoneIterating() )
