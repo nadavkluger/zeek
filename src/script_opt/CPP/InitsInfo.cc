@@ -3,6 +3,7 @@
 #include "zeek/Desc.h"
 #include "zeek/RE.h"
 #include "zeek/ZeekString.h"
+#include "zeek/script_opt/IDOptInfo.h"
 #include "zeek/script_opt/CPP/Attrs.h"
 #include "zeek/script_opt/CPP/Compile.h"
 
@@ -168,6 +169,7 @@ PatternConstInfo::PatternConstInfo(CPPCompile* c, ValPtr v) : CPP_InitInfo()
 	auto re = v->AsPatternVal()->Get();
 	pattern = c->TrackString(CPPEscape(re->OrigText()));
 	is_case_insensitive = re->IsCaseInsensitive();
+	is_single_line = re->IsSingleLine();
 	}
 
 CompoundItemInfo::CompoundItemInfo(CPPCompile* _c, ValPtr v) : CPP_InitInfo(), c(_c)
