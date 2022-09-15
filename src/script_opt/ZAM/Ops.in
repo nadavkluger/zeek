@@ -2213,18 +2213,129 @@ eval	auto aux = z.aux;
 	auto s = new String(false, reinterpret_cast<byte_vec>(res), res_p - res);
 	Cat1Op(ZVal(new StringVal(s)))
 
-internal-op Cat2
-type V
-eval	auto aux = z.aux;
+macro CatNPre()
+	auto aux = z.aux;
 	auto& ca = aux->cat_args;
-	size_t max_size = ca[0]->MaxSize(frame, 0);
-	max_size += ca[1]->MaxSize(frame, 1);
+
+macro CatNMid()
 	auto res = new char[max_size + /* slop */ 10];
 	auto res_p = res;
-	ca[0]->RenderInto(frame, 0, res_p);
-	ca[1]->RenderInto(frame, 1, res_p);
+
+macro CatNPost()
 	auto s = new String(false, reinterpret_cast<byte_vec>(res), res_p - res);
 	Cat1Op(ZVal(new StringVal(s)))
+
+internal-op Cat2
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	CatNPost()
+
+internal-op Cat3
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	CatNPost()
+
+internal-op Cat4
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	max_size += ca[3]->MaxSize(frame, 3);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	ca[3]->RenderInto(frame, 3, res_p);
+	CatNPost()
+
+internal-op Cat5
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	max_size += ca[3]->MaxSize(frame, 3);
+	max_size += ca[4]->MaxSize(frame, 4);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	ca[3]->RenderInto(frame, 3, res_p);
+	ca[4]->RenderInto(frame, 4, res_p);
+	CatNPost()
+
+internal-op Cat6
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	max_size += ca[3]->MaxSize(frame, 3);
+	max_size += ca[4]->MaxSize(frame, 4);
+	max_size += ca[5]->MaxSize(frame, 5);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	ca[3]->RenderInto(frame, 3, res_p);
+	ca[4]->RenderInto(frame, 4, res_p);
+	ca[5]->RenderInto(frame, 5, res_p);
+	CatNPost()
+
+internal-op Cat7
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	max_size += ca[3]->MaxSize(frame, 3);
+	max_size += ca[4]->MaxSize(frame, 4);
+	max_size += ca[5]->MaxSize(frame, 5);
+	max_size += ca[6]->MaxSize(frame, 6);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	ca[3]->RenderInto(frame, 3, res_p);
+	ca[4]->RenderInto(frame, 4, res_p);
+	ca[5]->RenderInto(frame, 5, res_p);
+	ca[6]->RenderInto(frame, 6, res_p);
+	CatNPost()
+
+internal-op Cat8
+type V
+eval	CatNPre()
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	max_size += ca[2]->MaxSize(frame, 2);
+	max_size += ca[3]->MaxSize(frame, 3);
+	max_size += ca[4]->MaxSize(frame, 4);
+	max_size += ca[5]->MaxSize(frame, 5);
+	max_size += ca[6]->MaxSize(frame, 6);
+	max_size += ca[7]->MaxSize(frame, 7);
+	CatNMid()
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
+	ca[2]->RenderInto(frame, 2, res_p);
+	ca[3]->RenderInto(frame, 3, res_p);
+	ca[4]->RenderInto(frame, 4, res_p);
+	ca[5]->RenderInto(frame, 5, res_p);
+	ca[6]->RenderInto(frame, 6, res_p);
+	ca[7]->RenderInto(frame, 7, res_p);
+	CatNPost()
 
 internal-op Analyzer--Name
 type VV

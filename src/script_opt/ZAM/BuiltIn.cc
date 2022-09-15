@@ -222,10 +222,19 @@ bool ZAMCompiler::BuiltIn_cat(const NameExpr* n, const ExprPList& args)
 
 	else if ( args.size() > 1 )
 		{
-		if ( args.size() == 2 )
-			z = GenInst(OP_CAT2_V, n);
-		else
-			z = GenInst(OP_CATN_V, n);
+		switch ( args.size() )
+			{
+			case 2: z = GenInst(OP_CAT2_V, n); break;
+			case 3: z = GenInst(OP_CAT3_V, n); break;
+			case 4: z = GenInst(OP_CAT4_V, n); break;
+			case 5: z = GenInst(OP_CAT5_V, n); break;
+			case 6: z = GenInst(OP_CAT6_V, n); break;
+			case 7: z = GenInst(OP_CAT7_V, n); break;
+			case 8: z = GenInst(OP_CAT8_V, n); break;
+
+			default: z = GenInst(OP_CATN_V, n); break;
+			}
+
 		z.aux = BuildCatAux(args);
 		}
 
