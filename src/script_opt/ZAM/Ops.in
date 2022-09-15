@@ -2205,11 +2205,24 @@ eval	auto aux = z.aux;
 	int n = aux->n;
 	size_t max_size = 0;
 	for ( int i = 0; i < n; ++i )
-		max_size += ca[i]->MaxSize(frame);
+		max_size += ca[i]->MaxSize(frame, i);
 	auto res = new char[max_size + /* slop */ n];
 	auto res_p = res;
 	for ( int i = 0; i < n; ++i )
-		ca[i]->RenderInto(frame, res_p);
+		ca[i]->RenderInto(frame, i, res_p);
+	auto s = new String(false, reinterpret_cast<byte_vec>(res), res_p - res);
+	Cat1Op(ZVal(new StringVal(s)))
+
+internal-op Cat2
+type V
+eval	auto aux = z.aux;
+	auto& ca = aux->cat_args;
+	size_t max_size = ca[0]->MaxSize(frame, 0);
+	max_size += ca[1]->MaxSize(frame, 1);
+	auto res = new char[max_size + /* slop */ 10];
+	auto res_p = res;
+	ca[0]->RenderInto(frame, 0, res_p);
+	ca[1]->RenderInto(frame, 1, res_p);
 	auto s = new String(false, reinterpret_cast<byte_vec>(res), res_p - res);
 	Cat1Op(ZVal(new StringVal(s)))
 

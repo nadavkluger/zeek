@@ -8,8 +8,8 @@
 namespace zeek::detail
 	{
 
-FixedCatArg::FixedCatArg(const TypePtr& _t, int _slot)
-: t(_t), slot(_slot)
+FixedCatArg::FixedCatArg(const TypePtr& _t)
+: t(_t)
 	{
 	switch ( t->Tag() ) {
         TYPE_BOOL:
@@ -55,7 +55,7 @@ FixedCatArg::FixedCatArg(const TypePtr& _t, int _slot)
 	}
 	}
 
-void FixedCatArg::RenderInto(ZVal* zframe, char*& res)
+void FixedCatArg::RenderInto(ZVal* zframe, int slot, char*& res)
 	{
 	auto& z = zframe[slot];
 	int n;
@@ -148,7 +148,7 @@ void FixedCatArg::RenderInto(ZVal* zframe, char*& res)
 	}
 	}
 
-size_t PatternCatArg::ComputeMaxSize(ZVal* zframe)
+size_t PatternCatArg::ComputeMaxSize(ZVal* zframe, int slot)
 	{
 	text = zframe[slot].AsPattern()->AsPattern()->PatternText();
 	n = strlen(text);

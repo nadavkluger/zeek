@@ -222,7 +222,10 @@ bool ZAMCompiler::BuiltIn_cat(const NameExpr* n, const ExprPList& args)
 
 	else if ( args.size() > 1 )
 		{
-		z = GenInst(OP_CATN_V, n);
+		if ( args.size() == 2 )
+			z = GenInst(OP_CAT2_V, n);
+		else
+			z = GenInst(OP_CATN_V, n);
 		z.aux = BuildCatAux(args);
 		}
 
@@ -293,19 +296,19 @@ ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
 			TYPE_PORT:
 			TYPE_ADDR:
 			TYPE_SUBNET:
-				ca = std::make_unique<FixedCatArg>(t, slot);
+				ca = std::make_unique<FixedCatArg>(t);
 				break;
 
 			TYPE_STRING:
-				ca = std::make_unique<StringCatArg>(slot);
+				ca = std::make_unique<StringCatArg>();
 				break;
 
 			TYPE_PATTERN:
-				ca = std::make_unique<PatternCatArg>(slot);
+				ca = std::make_unique<PatternCatArg>();
 				break;
 
 			default:
-				ca = std::make_unique<DescCatArg>(t, slot);
+				ca = std::make_unique<DescCatArg>(t);
 				break;
 			}
 			}
