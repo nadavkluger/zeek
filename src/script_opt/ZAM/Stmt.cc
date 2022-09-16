@@ -876,7 +876,8 @@ const ZAMStmt ZAMCompiler::LoopOverVector(const ForStmt* f, const NameExpr* val)
 
 	if ( value_var )
 		{
-		z = ZInstI(OP_NEXT_VECTOR_ITER_VAL_VAR_VVVV, FrameSlot(loop_var), FrameSlot(value_var), iter_slot, 0);
+		z = ZInstI(OP_NEXT_VECTOR_ITER_VAL_VAR_VVVV, FrameSlot(loop_var), FrameSlot(value_var),
+		           iter_slot, 0);
 		z.t = value_var->GetType();
 		z.is_managed = ZVal::IsManagedType(z.t);
 		z.op_type = OP_VVVV_I3_I4;

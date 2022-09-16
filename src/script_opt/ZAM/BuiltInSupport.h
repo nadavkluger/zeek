@@ -1,9 +1,10 @@
 // See the file "COPYING" in the main distribution directory for copyright.
 
+#include "zeek/Desc.h"
 #include "zeek/Expr.h"
 
 namespace zeek::detail
-        {
+	{
 
 // Base class for tracking information about a single cat() argument, with
 // optimizations for some common cases.
@@ -65,7 +66,10 @@ public:
 		}
 
 protected:
-	size_t ComputeMaxSize(ZVal* zframe, int slot) override { return zframe[slot].AsString()->Len(); }
+	size_t ComputeMaxSize(ZVal* zframe, int slot) override
+		{
+		return zframe[slot].AsString()->Len();
+		}
 	};
 
 class PatternCatArg : public CatArg
@@ -91,8 +95,7 @@ protected:
 class DescCatArg : public CatArg
 	{
 public:
-	DescCatArg(const TypePtr& _t)
-	: CatArg(), t(_t) { d.SetStyle(RAW_STYLE); }
+	DescCatArg(const TypePtr& _t) : CatArg(), t(_t) { d.SetStyle(RAW_STYLE); }
 
 	void RenderInto(ZVal* zframe, int slot, char*& res) override
 		{

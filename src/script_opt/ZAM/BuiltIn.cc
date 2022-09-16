@@ -224,15 +224,31 @@ bool ZAMCompiler::BuiltIn_cat(const NameExpr* n, const ExprPList& args)
 		{
 		switch ( args.size() )
 			{
-			case 2: z = GenInst(OP_CAT2_V, n); break;
-			case 3: z = GenInst(OP_CAT3_V, n); break;
-			case 4: z = GenInst(OP_CAT4_V, n); break;
-			case 5: z = GenInst(OP_CAT5_V, n); break;
-			case 6: z = GenInst(OP_CAT6_V, n); break;
-			case 7: z = GenInst(OP_CAT7_V, n); break;
-			case 8: z = GenInst(OP_CAT8_V, n); break;
+			case 2:
+				z = GenInst(OP_CAT2_V, n);
+				break;
+			case 3:
+				z = GenInst(OP_CAT3_V, n);
+				break;
+			case 4:
+				z = GenInst(OP_CAT4_V, n);
+				break;
+			case 5:
+				z = GenInst(OP_CAT5_V, n);
+				break;
+			case 6:
+				z = GenInst(OP_CAT6_V, n);
+				break;
+			case 7:
+				z = GenInst(OP_CAT7_V, n);
+				break;
+			case 8:
+				z = GenInst(OP_CAT8_V, n);
+				break;
 
-			default: z = GenInst(OP_CATN_V, n); break;
+			default:
+				z = GenInst(OP_CATN_V, n);
+				break;
 			}
 
 		z.aux = BuildCatAux(args);
@@ -283,7 +299,7 @@ ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
 		if ( a_i->Tag() == EXPR_CONST )
 			{
 			auto c = a_i->AsConstExpr()->ValuePtr();
-			aux->Add(i, c);	// it will be ignore
+			aux->Add(i, c); // it will be ignored
 			auto sv = ZAM_val_cat(c);
 			auto s = sv->AsString();
 			auto b = reinterpret_cast<char*>(s->Bytes());
@@ -295,7 +311,8 @@ ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
 			auto slot = FrameSlot(a_i->AsNameExpr());
 			aux->Add(i, slot, t);
 
-			switch ( t->Tag() ) {
+			switch ( t->Tag() )
+				{
 			TYPE_BOOL:
 			TYPE_INT:
 			TYPE_COUNT:
@@ -316,10 +333,10 @@ ZInstAux* ZAMCompiler::BuildCatAux(const ExprPList& args)
 				ca = std::make_unique<PatternCatArg>();
 				break;
 
-			default:
-				ca = std::make_unique<DescCatArg>(t);
-				break;
-			}
+				default:
+					ca = std::make_unique<DescCatArg>(t);
+					break;
+				}
 			}
 
 		aux->cat_args[i] = std::move(ca);
