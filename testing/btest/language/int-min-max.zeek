@@ -1,3 +1,6 @@
+# Don't run for C++ script compilation, as the C++ compiler itself complains
+# about the constants.
+# @TEST-REQUIRES: test "${ZEEK_USE_CPP}" != "1"
 # @TEST-EXEC: zeek -b %INPUT >out
 # @TEST-EXEC: btest-diff out
 # @TEST-EXEC: btest-diff .stderr
