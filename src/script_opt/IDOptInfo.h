@@ -119,9 +119,10 @@ public:
 
 	// Used to track expressions employed when explicitly initializing
 	// the identifier.  These are needed by compile-to-C++ script
-	// optimization.  They're not used by ZAM optimization.
+	// optimization, and for tracking variable usage.
 	void AddInitExpr(ExprPtr init_expr);
 	const std::vector<ExprPtr>& GetInitExprs() const { return init_exprs; }
+	static const std::vector<std::pair<const ID*, ExprPtr>>& GetGlobalInitExprs() { return global_init_exprs; }
 
 	// Associated constant expression, if any.  This is only set
 	// for identifiers that are aliases for a constant (i.e., there
@@ -224,6 +225,9 @@ private:
 	// one of the earlier instances rather than the last one.
 	std::vector<ExprPtr> init_exprs;
 
+	// Tracks initializations of globals in the order they're seen.
+	static std::vector<std::pair<const ID*, ExprPtr>> global_init_exprs;
+
 	// If non-nil, a constant that this identifier always holds
 	// once initially defined.
 	const ConstExpr* const_expr = nullptr;
@@ -256,8 +260,12 @@ private:
 	// Whether the identifier is a temporary variable.
 	bool is_temp = false;
 
-	// Only needed for debugging purposes.
+	// Associated identifier, to enable tracking of initialization
+	// expressions for globals (for C++ compilation), and for debugging
+	// output.
 	const ID* my_id;
+
+	// Only needed for debugging purposes.
 	bool tracing = false;
 
 	// Track whether we've already generated usage errors.

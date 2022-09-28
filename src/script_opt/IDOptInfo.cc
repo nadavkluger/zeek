@@ -51,6 +51,8 @@ void IDDefRegion::Dump() const
 	printf("\n");
 	}
 
+std::vector<std::pair<const ID*, ExprPtr>> IDOptInfo::global_init_exprs;
+
 void IDOptInfo::Clear()
 	{
 	static bool did_init = false;
@@ -67,6 +69,17 @@ void IDOptInfo::Clear()
 	confluence_stmts.clear();
 
 	tracing = trace_ID && util::streq(trace_ID, my_id->Name());
+	}
+
+void IDOptInfo::AddInitExpr(ExprPtr init_expr)
+	{
+	if ( ! init_expr )
+		return;
+
+	if ( my_id->IsGlobal() )
+		global_init_exprs.emplace_back(std::pair<const ID*, ExprPtr>(my_id, init_expr));
+
+	init_exprs.emplace_back(std::move(init_expr));
 	}
 
 void IDOptInfo::DefinedAfter(const Stmt* s, const ExprPtr& e,
