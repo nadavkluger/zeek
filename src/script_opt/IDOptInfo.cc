@@ -51,7 +51,7 @@ void IDDefRegion::Dump() const
 	printf("\n");
 	}
 
-std::vector<std::pair<const ID*, ExprPtr>> IDOptInfo::global_init_exprs;
+std::vector<IDInitInfo> IDOptInfo::global_init_exprs;
 
 void IDOptInfo::Clear()
 	{
@@ -71,13 +71,13 @@ void IDOptInfo::Clear()
 	tracing = trace_ID && util::streq(trace_ID, my_id->Name());
 	}
 
-void IDOptInfo::AddInitExpr(ExprPtr init_expr)
+void IDOptInfo::AddInitExpr(ExprPtr init_expr, InitClass ic)
 	{
 	if ( ! init_expr )
 		return;
 
 	if ( my_id->IsGlobal() )
-		global_init_exprs.emplace_back(std::pair<const ID*, ExprPtr>(my_id, init_expr));
+		global_init_exprs.emplace_back(IDInitInfo(my_id, init_expr, ic));
 
 	init_exprs.emplace_back(std::move(init_expr));
 	}

@@ -105,6 +105,25 @@ protected:
 	ExprPtr def_expr;
 	};
 
+// Class tracking information associated with a (global) identifier's
+// (re-)initialization.
+
+class IDInitInfo
+	{
+public:
+	IDInitInfo(const ID* _id, ExprPtr _init, InitClass _ic)
+	: id(_id), init(_init), ic(_ic) {}
+
+	const ID* Id() const { return id; }
+	const ExprPtr& Init() const { return init; }
+	InitClass IC() const { return ic; }
+
+private:
+	const ID* id;
+	ExprPtr init;
+	InitClass ic;
+	};
+
 // Class tracking optimization information associated with identifiers.
 
 class IDOptInfo
@@ -120,9 +139,9 @@ public:
 	// Used to track expressions employed when explicitly initializing
 	// the identifier.  These are needed by compile-to-C++ script
 	// optimization, and for tracking variable usage.
-	void AddInitExpr(ExprPtr init_expr);
+	void AddInitExpr(ExprPtr init_expr, InitClass ic);
 	const std::vector<ExprPtr>& GetInitExprs() const { return init_exprs; }
-	static const std::vector<std::pair<const ID*, ExprPtr>>& GetGlobalInitExprs() { return global_init_exprs; }
+	static auto& GetGlobalInitExprs() { return global_init_exprs; }
 
 	// Associated constant expression, if any.  This is only set
 	// for identifiers that are aliases for a constant (i.e., there
@@ -226,7 +245,7 @@ private:
 	std::vector<ExprPtr> init_exprs;
 
 	// Tracks initializations of globals in the order they're seen.
-	static std::vector<std::pair<const ID*, ExprPtr>> global_init_exprs;
+	static std::vector<IDInitInfo> global_init_exprs;
 
 	// If non-nil, a constant that this identifier always holds
 	// once initially defined.
