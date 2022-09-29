@@ -472,6 +472,9 @@ void CPPCompile::GenFinishInit()
 	NL();
 	Emit("load_BiFs__CPP();");
 
+	NL();
+	Emit("init_globals__CPP();");
+
 	EndBlock();
 	}
 
