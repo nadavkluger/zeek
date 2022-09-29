@@ -137,10 +137,17 @@ public:
 	void Clear();
 
 	// Used to track expressions employed when explicitly initializing
-	// the identifier.  These are needed by compile-to-C++ script
-	// optimization, and for tracking variable usage.
-	void AddInitExpr(ExprPtr init_expr, InitClass ic);
+	// the (global) identifier.  These are needed by compile-to-C++ script
+	// optimization, and for tracking variable usage.  An initialization
+	// class other than INIT_NONE indicates that initialization should
+	// be done with the ExprPtr form of ID::SetVal.
+	void AddInitExpr(ExprPtr init_expr, InitClass ic = INIT_NONE);
+
+	// Returns the initialization expressions for this identifier.
 	const std::vector<ExprPtr>& GetInitExprs() const { return init_exprs; }
+
+	// Returns a list of the initialization expressions seen for all
+	// globals, ordered by when they were processed.
 	static auto& GetGlobalInitExprs() { return global_init_exprs; }
 
 	// Associated constant expression, if any.  This is only set

@@ -17,6 +17,7 @@
 #include "zeek/Traverse.h"
 #include "zeek/Val.h"
 #include "zeek/module_util.h"
+#include "zeek/script_opt/IDOptInfo.h"
 #include "zeek/script_opt/StmtOptInfo.h"
 #include "zeek/script_opt/UsageAnalyzer.h"
 
@@ -340,13 +341,19 @@ static void make_var(const IDPtr& id, TypePtr t, InitClass c, ExprPtr init,
 
 		if ( init && ((c == INIT_EXTRA && id->GetAttr(ATTR_ADD_FUNC)) ||
 		              (c == INIT_REMOVE && id->GetAttr(ATTR_DEL_FUNC))) )
+			{
 			// Just apply the function.
 			id->SetVal(init, c);
+			id->GetOptInfo()->AddInitExpr(init, c);
+			}
 
 		else if ( dt != VAR_REDEF || init || ! attr )
 			{
 			auto init_expr = initialize_var(id, c, init);
 			if ( init_expr )
+				{
+				id->GetOptInfo()->AddInitExpr(init_expr);
+
 				try
 					{
 					(void)init_expr->Eval(nullptr);
@@ -355,6 +362,7 @@ static void make_var(const IDPtr& id, TypePtr t, InitClass c, ExprPtr init,
 					{
 					id->Error("initialization failed");
 					}
+				}
 			}
 		}
 
