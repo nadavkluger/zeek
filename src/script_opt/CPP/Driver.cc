@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <cerrno>
 
+#include "zeek/script_opt/IDOptInfo.h"
 #include "zeek/script_opt/CPP/Compile.h"
 
 extern std::unordered_set<std::string> files_with_conditionals;
@@ -310,6 +311,24 @@ void CPPCompile::RegisterCompiledBody(const string& f)
 
 void CPPCompile::GenEpilog()
 	{
+	auto& ge = IDOptInfo::GetGlobalInitExprs();
+	for ( auto ginit : ge )
+		{
+		auto g = ginit.Id();
+		if ( pfs.Globals().count(g) == 0 )
+			continue;
+
+		IDPtr gid = {NewRef{}, const_cast<ID*>(g)};
+		auto gn = make_intrusive<RefExpr>(make_intrusive<NameExpr>(gid));
+		auto ae = make_intrusive<AssignExpr>(gn, ginit.Init(), true);
+
+		if ( ginit.IC() == INIT_FULL )
+			{
+			auto init = GenExpr(ae.get(), GEN_NATIVE, true);
+			printf("%s init: %s\n", g->Name(), init.c_str());
+			}
+		}
+
 	NL();
 	for ( const auto& ii : init_infos )
 		GenInitExpr(ii.second);
