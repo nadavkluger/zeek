@@ -111,8 +111,7 @@ protected:
 class IDInitInfo
 	{
 public:
-	IDInitInfo(const ID* _id, ExprPtr _init, InitClass _ic)
-	: id(_id), init(_init), ic(_ic) {}
+	IDInitInfo(const ID* _id, ExprPtr _init, InitClass _ic) : id(_id), init(_init), ic(_ic) { }
 
 	const ID* Id() const { return id; }
 	const ExprPtr& Init() const { return init; }

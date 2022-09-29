@@ -339,7 +339,7 @@ GlobalInitInfo::GlobalInitInfo(CPPCompile* c, const ID* g, string _CPP_name)
 		attrs = -1;
 
 	exported = g->IsExport();
-	val = ValElem(c, nullptr);	// empty because we initialize dynamically
+	val = ValElem(c, nullptr); // empty because we initialize dynamically
 	}
 
 void GlobalInitInfo::InitializerVals(std::vector<std::string>& ivs) const
