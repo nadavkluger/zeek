@@ -90,6 +90,8 @@ target_link_libraries(zeek_fuzzer_shared
 add_fuzz_target(packet)
 add_fuzz_target(dns)
 
+add_generic_analyzer_fuzz_target(dnp3)
+add_generic_analyzer_fuzz_target(dhcp)
 add_generic_analyzer_fuzz_target(ftp)
 add_generic_analyzer_fuzz_target(http)
 add_generic_analyzer_fuzz_target(imap)
