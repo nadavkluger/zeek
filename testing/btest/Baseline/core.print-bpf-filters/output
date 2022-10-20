@@ -5,7 +5,7 @@
 #unset_field	-
 #path	packet_filter
 #open XXXX-XX-XX-XX-XX-XX
-#fields	ts	node	filter	init	success	reason
+#fields	ts	node	filter	init	success	failure_reason
 #types	time	string	string	bool	bool	string
 XXXXXXXXXX.XXXXXX	zeek	ip or not ip	T	T	-
 #close XXXX-XX-XX-XX-XX-XX
@@ -15,7 +15,7 @@ XXXXXXXXXX.XXXXXX	zeek	ip or not ip	T	T	-
 #unset_field	-
 #path	packet_filter
 #open XXXX-XX-XX-XX-XX-XX
-#fields	ts	node	filter	init	success	reason
+#fields	ts	node	filter	init	success	failure_reason
 #types	time	string	string	bool	bool	string
 XXXXXXXXXX.XXXXXX	zeek	port 42	T	T	-
 #close XXXX-XX-XX-XX-XX-XX
@@ -25,7 +25,7 @@ XXXXXXXXXX.XXXXXX	zeek	port 42	T	T	-
 #unset_field	-
 #path	packet_filter
 #open XXXX-XX-XX-XX-XX-XX
-#fields	ts	node	filter	init	success	reason
+#fields	ts	node	filter	init	success	failure_reason
 #types	time	string	string	bool	bool	string
 XXXXXXXXXX.XXXXXX	zeek	(vlan) and (ip or not ip)	T	T	-
 #close XXXX-XX-XX-XX-XX-XX
