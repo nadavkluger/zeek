@@ -139,6 +139,29 @@ export {
 	## Analyzer::register_for_port(s) and packet analyzers can add to this
 	## using PacketAnalyzer::register_for_port(s).
 	global ports: table[AllAnalyzers::Tag] of set[port];
+
+	## A set of protocol, packet or file analyzer tags requested by
+	## scripts. If :zeek:see:`Analyzer::enable_requested_analyzers` is
+	## ``T`` (default), these will be enabled during :zeek:see:`zeek_init`.
+	##
+	## Generally, all analyzers in Zeek are enabled. However, in certain
+	## setups this is not and analyzers may be disabled by default. The
+	## ``requested_analyzers`` set provides a place for scripts to record
+	## the requirement for a certain analyzer.
+	##
+	## This set can be added to via ``redef`` or :zeek:see:`Analyzer::request_analyzer`.
+	global requested_analyzers: set[AllAnalyzers::Tag] = {} &redef;
+
+	## If ``T``, enable all analyzers recorded in :zeek:see:`Analyzer::requested_analyzers`.
+	const enable_requested_analyzers = T;
+
+	## Request the given analyzer tag.
+	##
+	## Calling this method is only valid during :zeek:see:`zeek_init`
+	## with a priority greater than -5.
+	##
+	## tag: The analyzer tag.
+	global request_analyzer: function(tag: AllAnalyzers::Tag);
 }
 
 @load base/bif/analyzer.bif
@@ -152,6 +175,13 @@ event zeek_init() &priority=5
 
 	for ( a in disabled_analyzers )
 		disable_analyzer(a);
+	}
+
+event zeek_init() &priority=-5
+	{
+	if ( enable_requested_analyzers )
+		for ( a in requested_analyzers )
+			Analyzer::enable_analyzer(a);
 	}
 
 function enable_analyzer(tag: AllAnalyzers::Tag) : bool
@@ -247,4 +277,9 @@ function get_bpf(): string
 		output = PacketFilter::combine_filters(output, "or", analyzer_to_bpf(tag));
 		}
 	return output;
+	}
+
+function request_analyzer(tag: AllAnalyzers::Tag)
+	{
+	add requested_analyzers[tag];
 	}
