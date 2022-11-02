@@ -219,11 +219,6 @@ ubuntu2210_task:
     dockerfile: ci/ubuntu-22.10/Dockerfile
     << : *RESOURCES_TEMPLATE
   << : *CI_TEMPLATE
-  env:
-    ZEEK_CI_CREATE_ARTIFACT: 1
-  upload_binary_artifacts:
-    path: build.tgz
-  benchmark_script: ./ci/benchmark.sh
 
 ubuntu22_task:
   container:
